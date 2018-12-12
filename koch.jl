@@ -19,19 +19,19 @@ function pointskoch(points, maxk, α = sqrt(3)/2)
   return points
 end
 
-function plot_koch(points; c=:red)
+function plot_koch(points; c=:red, kwargs...)
   n = length(points)
   plot(leg=false, axis=false, grid=false, background=:white)
   px = [p[1] for p in points]
   py = [p[2] for p in points]
-  plot!(px, py, c=c)
+  plot!(px, py, c=c; kwargs...)
 end
 
-function plot_koch!(points; c=:red)
+function plot_koch!(points; c=:red, kwargs...)
   n = length(points)
   px = [p[1] for p in points]
   py = [p[2] for p in points]
-  plot!(px, py, c=c)
+  plot!(px, py, c=c; kwargs...)
 end
 
 function main()
@@ -145,5 +145,27 @@ function large_koch()
   png("koch-large")
 end
 
-main()
-large_koch()
+function koch_julia()
+  colors = [RGB(0.584, 0.345, 0.698)  RGB(0.667, 0.475, 0.757);
+            RGB(0.220, 0.596, 0.149)  RGB(0.376, 0.678, 0.318);
+            RGB(0.796, 0.235, 0.200)  RGB(0.835, 0.388, 0.361)]
+  plot()
+  plot_koch([])
+  α = sqrt(3)/3
+  for (i,θ) in enumerate([2π*i/3 for i = 0:2])
+    points = [[sin(2π*i/3), cos(2π*i/3)] for i = 0:3]
+    points = pointskoch(points, 6)
+    plot_koch!([[sin(θ) + x; cos(θ) + y] for (x,y) in points], c=colors[i,1], lw=2)
+    for p = 1:8
+      points = α * [[-y; x] for (x,y) in points]
+      plot_koch!([[sin(θ) + x; cos(θ) + y] for (x,y) in points], c=colors[i,p%2+1], lw=2)
+    end
+  end
+  xlims!(-2.1, 2.1)
+  ylims!(-1.9, 2.3)
+  png("koch-julia")
+end
+
+#main()
+#large_koch()
+koch_julia()
